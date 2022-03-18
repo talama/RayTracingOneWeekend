@@ -1,6 +1,7 @@
 {
   "name": "RayTracingOneWeekend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Working through Peter Shirley [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) in javascript.",
   "main": "index.js",
   "scripts": {
