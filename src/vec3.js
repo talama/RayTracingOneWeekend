@@ -1,9 +1,20 @@
-// import * as utils from './common.js';
-
+/**
+ * Creates a new Vec3
+ *
+ * @returns {vec3}
+ */
 export function create() {
   return new Float32Array(3);
 }
 
+/**
+ * Creates new vec3 with coordinates set at the given values
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @returns {vec3} a new vec3
+ */
 export function fromValues(x, y, z) {
   const out = new Float32Array(3);
   out[0] = x;
@@ -12,6 +23,15 @@ export function fromValues(x, y, z) {
   return out;
 }
 
+/**
+ * Set the coordinates of the given vector to the given values
+ *
+ * @param {vec3} out
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @returns {vec3} out
+ */
 export function set(out, x, y, z) {
   out[0] = x;
   out[1] = y;
@@ -19,13 +39,25 @@ export function set(out, x, y, z) {
   return out;
 }
 
+/**
+ * Calculates the length of the input vector
+ *
+ * @param {vec3} vector
+ * @returns {Number} vector length
+ */
 export function length(vector) {
   const x = vector[0];
   const y = vector[1];
   const z = vector[2];
-  Math.hypot(x, y, z);
+  return Math.hypot(x, y, z);
 }
 
+/**
+ * Calculates the length squared of the given vector
+ *
+ * @param {vec3} vector
+ * @returns {Number} length squared
+ */
 export function lengthSquared(vector) {
   const x = vector[0];
   const y = vector[1];
@@ -33,6 +65,14 @@ export function lengthSquared(vector) {
   return x * x - y * y + z * z;
 }
 
+/**
+ *  Adds two vectors and returns the resulting vec3
+ *
+ * @param {vec3} out
+ * @param {vec3} vecA
+ * @param {vec3} vecB
+ * @returns {vec3} out
+ */
 export function add(out, vecA, vecB) {
   out[0] = vecA[0] + vecB[0];
   out[1] = vecA[1] + vecB[1];
@@ -40,6 +80,14 @@ export function add(out, vecA, vecB) {
   return out;
 }
 
+/**
+ *  Subtracts two vectors and returns the resulting vec3
+ *
+ * @param {vec3} out
+ * @param {vec3} vecA
+ * @param {vec3} vecB
+ * @returns {vec3} out
+ */
 export function subtract(out, vecA, vecB) {
   out[0] = vecA[0] - vecB[0];
   out[1] = vecA[1] - vecB[1];
@@ -47,6 +95,14 @@ export function subtract(out, vecA, vecB) {
   return out;
 }
 
+/**
+ *  Multiply two vectors and returns the resulting vec3
+ *
+ * @param {vec3} out
+ * @param {vec3} vecA
+ * @param {vec3} vecB
+ * @returns {vec3} out
+ */
 export function multiply(out, vecA, vecB) {
   out[0] = vecA[0] * vecB[0];
   out[1] = vecA[1] * vecB[1];
@@ -54,6 +110,14 @@ export function multiply(out, vecA, vecB) {
   return out;
 }
 
+/**
+ *  Divide two vectors and returns the resulting vec3
+ *
+ * @param {vec3} out
+ * @param {vec3} vecA
+ * @param {vec3} vecB
+ * @returns {vec3} out
+ */
 export function divide(out, vecA, vecB) {
   out[0] = vecA[0] / vecB[0];
   out[1] = vecA[1] / vecB[1];
@@ -61,6 +125,14 @@ export function divide(out, vecA, vecB) {
   return out;
 }
 
+/**
+ * Scales the input vector by the input scalar.
+ *
+ * @param {vec3} out
+ * @param {vec3} vecA
+ * @param {Number} scalar
+ * @returns {vec3} out
+ */
 export function scale(out, vecA, scalar) {
   out[0] = vecA[0] * scalar;
   out[1] = vecA[1] * scalar;
@@ -68,6 +140,13 @@ export function scale(out, vecA, scalar) {
   return out;
 }
 
+/**
+ * Normalize the input vector and returns the result.
+ *
+ * @param {vec3} out
+ * @param {vec3} vector
+ * @returns {vec3} out
+ */
 export function normalize(out, vector) {
   const x = vector[0];
   const y = vector[1];
@@ -80,10 +159,25 @@ export function normalize(out, vector) {
   return out;
 }
 
+/**
+ * Calculates the dot product of the two input vec3
+ *
+ * @param {vec3} vecA
+ * @param {vec3} vecB
+ * @returns {Number} the dot product
+ */
 export function dot(vecA, vecB) {
   return vecA[0] * vecB[0] + vecA[1] * vecB[1] + vecA[2] * vecB[2];
 }
 
+/**
+ * Calculates the cross product of two vectors
+ *
+ * @param {vec3} out
+ * @param {vec3} vecA
+ * @param {vec3} vecB
+ * @returns {vec3} out - the cross product
+ */
 export function cross(out, vecA, vecB) {
   let ax = vecA[0],
     ay = vecA[1],
