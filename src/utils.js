@@ -1,3 +1,6 @@
+import * as vec3 from './vec3.js';
+import { ray } from './ray.js';
+
 const EPSILON = 0.000001;
 let ARRAY_TYPE = Float32Array !== undefined ? Float32Array : Array;
 
@@ -37,4 +40,20 @@ function writePixel(pixelColor) {
   return `${r} ${g} ${b}`;
 }
 
-export { EPSILON, ARRAY_TYPE, degreeToRad, writePixel };
+function rayColor(ray) {
+  const direction = vec3.normalize(vec3.create(), ray.direction);
+  const t = 0.5 * (direction[1] + 1.0);
+  let comp1 = vec3.scale(
+    vec3.create(),
+    vec3.fromValues(1.0, 1.0, 1.0),
+    1.0 - t,
+  );
+  let comp2 = vec3.scale(
+    vec3.create(),
+    vec3.fromValues(0.5, 0.7, 1.0),
+    t,
+  );
+  return vec3.add(vec3.create(), comp1, comp2);
+}
+
+export { EPSILON, ARRAY_TYPE, degreeToRad, writePixel, rayColor };
