@@ -55,13 +55,13 @@ function writePixel(pixelColor) {
 function hitSphere(center, radius, ray) {
   const originCenter = ray.origin.subtract(Vec3.create(), center);
   const a = ray.direction.dot(ray.direction);
-  const b = 2 * originCenter.dot(ray.direction);
+  const halfb = originCenter.dot(ray.direction);
   const c = originCenter.dot(originCenter) - radius * radius;
-  const discriminant = b * b - 4 * a * c;
+  const discriminant = halfb * halfb - a * c;
   // no hit
   if (discriminant < 0) return -1.0;
   // returnd hit point (t)
-  return (-b - Math.sqrt(discriminant)) / (2 * a);
+  return (-halfb - Math.sqrt(discriminant)) / a;
 }
 
 /**
