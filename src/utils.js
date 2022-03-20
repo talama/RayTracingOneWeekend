@@ -58,7 +58,10 @@ function hitSphere(center, radius, ray) {
   const b = 2 * originCenter.dot(ray.direction);
   const c = originCenter.dot(originCenter) - radius * radius;
   const discriminant = b * b - 4 * a * c;
-  return discriminant > 0;
+  // no hit
+  if (discriminant < 0) return -1.0;
+  // returnd hit point (t)
+  return (-b - Math.sqrt(discriminant)) / (2 * a);
 }
 
 /**
@@ -72,12 +75,26 @@ function hitSphere(center, radius, ray) {
  * @returns {Vec3} - pixel color
  */
 function rayColor(ray) {
-  // if the reay hits the sphere return red color
-  if (hitSphere(Vec3.fromValues(0, 0, -1), 0.5, ray))
-    return Vec3.fromValues(1, 0, 0);
+  // check if the ray hits the sphere
+  let t = hitSphere(Vec3.fromValues(0, 0, -1), 0.5, ray);
+  // if it hits
+  if (t > 0.0) {
+    // normal = Point - Center
+    const normal = ray
+      .pointAt(t)
+      .subtract(Vec3.create(), Vec3.fromValues(0, 0, -1))
+      .normalize(Vec3.create());
+
+    // map normal component from [-1, 1] to [0, 1] range and assign them to the r,g,b values of the pixel.
+    return Vec3.fromValues(
+      normal.x + 1,
+      normal.y + 1,
+      normal.z + 1,
+    ).scale(Vec3.create(), 0.5);
+  }
   const direction = ray.direction.normalize(Vec3.create());
   // remap y value from [-1, 1] to [1, 1] range
-  const t = 0.5 * (direction.y + 1.0);
+  t = 0.5 * (direction.y + 1.0);
 
   // blends linearly between white [1, 1, 1] and [0.5, 0.7, 1.0]
   const comp1 = Vec3.fromValues(1.0, 1.0, 1.0).scale(
