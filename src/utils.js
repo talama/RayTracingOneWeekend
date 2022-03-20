@@ -1,5 +1,4 @@
-import * as vec3 from './vec3.js';
-import { ray } from './ray.js';
+import Vec3 from './vec3.js';
 
 const EPSILON = 0.000001;
 let ARRAY_TYPE = Float32Array !== undefined ? Float32Array : Array;
@@ -34,26 +33,24 @@ const ppmScale = function (num) {
 
 function writePixel(pixelColor) {
   // Write the translated [0,255] value of each color component.
-  const r = ppmScale(pixelColor[0]);
-  const g = ppmScale(pixelColor[1]);
-  const b = ppmScale(pixelColor[2]);
+  const r = ppmScale(pixelColor.x);
+  const g = ppmScale(pixelColor.y);
+  const b = ppmScale(pixelColor.z);
   return `${r} ${g} ${b}`;
 }
 
 function rayColor(ray) {
-  const direction = vec3.normalize(vec3.create(), ray.direction);
-  const t = 0.5 * (direction[1] + 1.0);
-  let comp1 = vec3.scale(
-    vec3.create(),
-    vec3.fromValues(1.0, 1.0, 1.0),
+  const direction = ray.direction.normalize(Vec3.create());
+  const t = 0.5 * (direction.y + 1.0);
+  const comp1 = Vec3.fromValues(1.0, 1.0, 1.0).scale(
+    Vec3.create(),
     1.0 - t,
   );
-  let comp2 = vec3.scale(
-    vec3.create(),
-    vec3.fromValues(0.5, 0.7, 1.0),
+  const comp2 = Vec3.fromValues(0.5, 0.7, 1.0).scale(
+    Vec3.create(),
     t,
   );
-  return vec3.add(vec3.create(), comp1, comp2);
+  return comp1.add(Vec3.create(), comp2);
 }
 
 export { EPSILON, ARRAY_TYPE, degreeToRad, writePixel, rayColor };

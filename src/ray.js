@@ -1,4 +1,4 @@
-import * as vec3 from './vec3.js';
+import Vec3 from './vec3.js';
 
 class ray {
   constructor(origin, direction) {
@@ -7,8 +7,9 @@ class ray {
   }
 
   pointAt(t) {
-    const point = vec3.scale(vec3.create(), this.direction, t);
-    return vec3.add(vec3.create(), point, this.origin);
+    return this.direction
+      .scale(Vec3.create(), t)
+      .add(Vec3.create(), this.origin);
   }
 }
 
