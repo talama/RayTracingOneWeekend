@@ -1,6 +1,6 @@
 import Vec3 from './vec3.js';
 
-class ray {
+class Ray {
   constructor(origin, direction) {
     this.origin = origin;
     this.direction = direction;
@@ -13,4 +13,4 @@ class ray {
   }
 }
 
-export { ray };
+export { Ray };

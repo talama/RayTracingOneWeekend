@@ -1,6 +1,6 @@
 import { rayColor, writePixel } from './utils.js';
 import Vec3 from './vec3.js';
-import { ray } from './ray.js';
+import { Ray } from './ray.js';
 
 (function () {
   //Image
@@ -38,7 +38,7 @@ import { ray } from './ray.js';
         .add(Vec3.create(), xCoord)
         .add(Vec3.create(), yCoord)
         .subtract(Vec3.create(), origin);
-      const r = new ray(origin, direction);
+      const r = new Ray(origin, direction);
       const pixelColor = rayColor(r);
       console.log(writePixel(pixelColor));
     }
