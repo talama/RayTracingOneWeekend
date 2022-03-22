@@ -1,6 +1,9 @@
 import { rayColor, writePixel } from './utils.js';
 import Vec3 from './vec3.js';
-import { Ray } from './ray.js';
+import Ray from './ray.js';
+import Hittable from './hittable.js';
+import HittableList from './hittableList.js';
+import Sphere from './sphere.js';
 
 (function () {
   //Image
@@ -8,10 +11,18 @@ import { Ray } from './ray.js';
   const imageWidth = 400;
   const imageHeight = Math.round(imageWidth / aspectRatio);
 
+  // World
+  const world = new HittableList();
+  const sphere1 = new Sphere(Vec3.fromValues(0, 0, -1), 0.5);
+  const sphere2 = new Sphere(Vec3.fromValues(0, -100.5, -1), 100);
+  world.add(sphere1);
+  world.add(sphere2);
+
   // Camera
   const viewportHeight = 2.0;
   const viewportWidth = aspectRatio * viewportHeight;
   const focalLength = 1.0;
+
   const origin = Vec3.create();
   const horizontal = Vec3.fromValues(viewportWidth, 0, 0);
   const vertical = Vec3.fromValues(0, viewportHeight, 0);
@@ -24,6 +35,7 @@ import { Ray } from './ray.js';
     .subtract(Vec3.create(), Vec3.fromValues(0, 0, focalLength));
 
   const ppmHeader = `P3\n${imageWidth} ${imageHeight}\n255\n`;
+
   // Render
   let t0 = performance.now();
   console.log(ppmHeader);
@@ -36,10 +48,9 @@ import { Ray } from './ray.js';
       const yCoord = vertical.scale(Vec3.create(), v);
       const direction = lowerLeft
         .add(Vec3.create(), xCoord)
-        .add(Vec3.create(), yCoord)
-        .subtract(Vec3.create(), origin);
-      const r = new Ray(origin, direction);
-      const pixelColor = rayColor(r);
+        .add(Vec3.create(), yCoord);
+      const ray = new Ray(origin, direction);
+      const pixelColor = rayColor(ray, world);
       console.log(writePixel(pixelColor));
     }
   }

@@ -1,3 +1,5 @@
+import HitRecord from './hitRecord.js';
+import HittableList from './hittableList.js';
 import Vec3 from './vec3.js';
 
 const EPSILON = 0.000001;
@@ -46,57 +48,26 @@ function writePixel(pixelColor) {
 }
 
 /**
- * Ray sphere intersection
-1 * @param {Vec3} center
- * @param {Vec3} radius
- * @param {Ray} ray
- * @returns {Boolean} - true if the ray intersects the sphere.
- */
-function hitSphere(center, radius, ray) {
-  const originCenter = ray.origin.subtract(Vec3.create(), center);
-  const a = ray.direction.dot(ray.direction);
-  const halfb = originCenter.dot(ray.direction);
-  const c = originCenter.dot(originCenter) - radius * radius;
-  const discriminant = halfb * halfb - a * c;
-  // no hit
-  if (discriminant < 0) return -1.0;
-  // returnd hit point (t)
-  return (-halfb - Math.sqrt(discriminant)) / a;
-}
-
-/**
- * Nearly blends white and blue depending on the height of the y coordinate after scaling the ray direction to unit length
- * (so −1.0 < y < 1.0). Because we're looking at the y height after normalizing the vector, we will have a horizontal gradient
- * to the color in addition to the vertical gradient. We scale the result to the range (0.0 < t < 10).
- *
- * blendedValue=(1−t) * startValue + t * endValue
  *
  * @param {Ray} ray
+ * @param {HittableList} world
  * @returns {Vec3} - pixel color
  */
-function rayColor(ray) {
-  // check if the ray hits the sphere
-  let t = hitSphere(Vec3.fromValues(0, 0, -1), 0.5, ray);
-  // if it hits
-  if (t > 0.0) {
-    // normal = Point - Center
-    const normal = ray
-      .pointAt(t)
-      .subtract(Vec3.create(), Vec3.fromValues(0, 0, -1))
-      .normalize(Vec3.create());
-
-    // map normal component from [-1, 1] to [0, 1] range and assign them to the r,g,b values of the pixel.
-    return Vec3.fromValues(
-      normal.x + 1,
-      normal.y + 1,
-      normal.z + 1,
-    ).scale(Vec3.create(), 0.5);
+function rayColor(ray, world) {
+  const hitRec = world.hit(ray, EPSILON, Infinity);
+  if (hitRec !== null) {
+    return hitRec.normal
+      .add(Vec3.create(), Vec3.fromValues(1, 1, 1))
+      .scale(Vec3.create(), 0.5);
   }
-  const direction = ray.direction.normalize(Vec3.create());
-  // remap y value from [-1, 1] to [1, 1] range
-  t = 0.5 * (direction.y + 1.0);
 
-  // blends linearly between white [1, 1, 1] and [0.5, 0.7, 1.0]
+  // Blends white and blue depending on the height of the y coordinate after scaling the ray direction to unit length
+  // (−1.0 < y < 1.0). Because we're looking at the y height after normalizing the vector, we will have a horizontal gradient
+  // to the color in addition to the vertical gradient. We scale the result to the range (0.0 < t < 10).
+  //
+  // blendedValue=(1−t) * startValue + t * endValue
+  const direction = ray.direction.normalize(Vec3.create());
+  const t = 0.5 * (direction.y + 1.0);
   const comp1 = Vec3.fromValues(1.0, 1.0, 1.0).scale(
     Vec3.create(),
     1.0 - t,

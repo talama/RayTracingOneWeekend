@@ -1,3 +1,6 @@
+/**
+ * @class Vec3
+ */
 class Vec3 {
   constructor() {
     this.data = new Float32Array(3);
@@ -47,29 +50,27 @@ class Vec3 {
     return out;
   }
   /**
-   * Calculates the length of the input vector
+   * Calculates the length of the vector
    *
-   * @param {Vec3} vector
    * @returns {Number} vector length
    */
-  static length(vector) {
-    const x = vector.x;
-    const y = vector.y;
-    const z = vector.z;
+  length() {
+    const x = this.x;
+    const y = this.y;
+    const z = this.z;
     return Math.hypot(x, y, z);
   }
 
   /**
-   * Calculates the length squared of the given vector
+   * Calculates the length squared of the vector
    *
-   * @param {Vec3} vector
    * @returns {Number} length squared
    */
-  static lengthSquared(vector) {
-    const x = vector.x;
-    const y = vector.y;
-    const z = vector.z;
-    return x * x - y * y + z * z;
+  lengthSquared() {
+    const x = this.x;
+    const y = this.y;
+    const z = this.z;
+    return x * x + y * y + z * z;
   }
 
   /**
@@ -139,6 +140,18 @@ class Vec3 {
     out.x = this.x * scalar;
     out.y = this.y * scalar;
     out.z = this.z * scalar;
+    return out;
+  }
+
+  /**
+   * Negates the component of the vector.
+   * @param {Vec3} out
+   * @returns {Vec3}
+   */
+  negate(out) {
+    out.x = -this.x;
+    out.y = -this.y;
+    out.z = -this.z;
     return out;
   }
 
