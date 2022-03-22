@@ -4,15 +4,35 @@
 class Vec3 {
   constructor() {
     this.data = new Float32Array(3);
-    this.x = this.data[0];
-    this.y = this.data[1];
-    this.z = this.data[2];
+  }
+
+  get x() {
+    return this.data[0];
+  }
+
+  get y() {
+    return this.data[1];
+  }
+
+  get z() {
+    return this.data[2];
+  }
+
+  set x(x) {
+    this.data[0] = x;
+  }
+
+  set y(y) {
+    this.data[1] = y;
+  }
+
+  set z(z) {
+    this.data[2] = z;
   }
 
   static create() {
     return new Vec3();
   }
-
   /**
    * Creates new Vec3 with coordinates set at the given values
    *
