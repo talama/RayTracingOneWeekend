@@ -1,15 +1,17 @@
 import { rayColor, writePixel } from './utils.js';
 import Vec3 from './vec3.js';
 import Ray from './ray.js';
-import Hittable from './hittable.js';
 import HittableList from './hittableList.js';
 import Sphere from './sphere.js';
+import Camera from './camera.js';
 
 (function () {
   //Image
   const aspectRatio = 16.0 / 9.0;
   const imageWidth = 400;
   const imageHeight = Math.round(imageWidth / aspectRatio);
+  const samples = 100;
+  const ppmHeader = `P3\n${imageWidth} ${imageHeight}\n255\n`;
 
   // World
   const world = new HittableList();
@@ -19,22 +21,7 @@ import Sphere from './sphere.js';
   world.add(sphere2);
 
   // Camera
-  const viewportHeight = 2.0;
-  const viewportWidth = aspectRatio * viewportHeight;
-  const focalLength = 1.0;
-
-  const origin = Vec3.create();
-  const horizontal = Vec3.fromValues(viewportWidth, 0, 0);
-  const vertical = Vec3.fromValues(0, viewportHeight, 0);
-  const halfHorizontal = horizontal.scale(Vec3.create(), 0.5);
-  const halfvertical = vertical.scale(Vec3.create(), 0.5);
-
-  const lowerLeft = origin
-    .subtract(Vec3.create(), halfHorizontal)
-    .subtract(Vec3.create(), halfvertical)
-    .subtract(Vec3.create(), Vec3.fromValues(0, 0, focalLength));
-
-  const ppmHeader = `P3\n${imageWidth} ${imageHeight}\n255\n`;
+  const cam = new Camera();
 
   // Render
   let t0 = performance.now();
@@ -42,16 +29,18 @@ import Sphere from './sphere.js';
   for (let y = imageHeight - 1; y >= 0; y -= 1) {
     console.error('Scanline remaining: ', y);
     for (let x = 0; x < imageWidth; x += 1) {
-      const u = x / (imageWidth - 1);
-      const v = y / (imageHeight - 1);
-      const xCoord = horizontal.scale(Vec3.create(), u);
-      const yCoord = vertical.scale(Vec3.create(), v);
-      const direction = lowerLeft
-        .add(Vec3.create(), xCoord)
-        .add(Vec3.create(), yCoord);
-      const ray = new Ray(origin, direction);
-      const pixelColor = rayColor(ray, world);
-      console.log(writePixel(pixelColor));
+      let pixelColor = Vec3.create();
+      for (let s = 0; s < samples; s += 1) {
+        const u = (x + Math.random()) / imageWidth;
+        const v = (y + Math.random()) / imageHeight;
+        const ray = cam.getRay(u, v);
+        pixelColor = pixelColor.add(
+          Vec3.create(),
+          rayColor(ray, world),
+        );
+      }
+      // console.error(writePixel(pixelColor, samples));
+      console.log(writePixel(pixelColor, samples));
     }
   }
   let t1 = performance.now();

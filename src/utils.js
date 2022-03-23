@@ -35,16 +35,26 @@ const ppmScale = function (num) {
 };
 
 /**
- * Write a pixel to a string scaling its values from the [0, 1] to the [0, 255] range
+ * Write a pixel to a string scaling its values
+ * from the [0, 1] to the [0, 255] range
  * @param {Vec3} pixelColor
  * @returns {Strings}
  */
-function writePixel(pixelColor) {
-  // Write the translated [0,255] value of each color component.
-  const r = ppmScale(pixelColor.x);
-  const g = ppmScale(pixelColor.y);
-  const b = ppmScale(pixelColor.z);
-  return `${r} ${g} ${b}`;
+function writePixel(pixelColor, samples) {
+  let r = pixelColor.x;
+  let g = pixelColor.y;
+  let b = pixelColor.z;
+
+  // Divide the color by the number of spamples
+  const scale = 1.0 / samples;
+  r *= scale;
+  g *= scale;
+  b *= scale;
+
+  // write the value of each color component
+  // scaled to the [0, 255] range
+
+  return `${ppmScale(r)} ${ppmScale(g)} ${ppmScale(b)}`;
 }
 
 /**
