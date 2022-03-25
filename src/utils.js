@@ -1,5 +1,6 @@
 import HitRecord from './hitRecord.js';
 import HittableList from './hittableList.js';
+import Ray from './ray.js';
 import Vec3 from './vec3.js';
 
 const EPSILON = 0.000001;
@@ -45,11 +46,12 @@ function writePixel(pixelColor, samples) {
   let g = pixelColor.y;
   let b = pixelColor.z;
 
-  // Divide the color by the number of spamples
+  // Divide the color by the number of spamples and gamma correct for gamma = 2.0
+  // (color ^ 1/gamma  -> color ^ 1/2 -> sqrt(color))
   const scale = 1.0 / samples;
-  r *= scale;
-  g *= scale;
-  b *= scale;
+  r = Math.sqrt(scale * r);
+  g = Math.sqrt(scale * g);
+  b = Math.sqrt(scale * b);
 
   // write the value of each color component
   // scaled to the [0, 255] range
@@ -63,12 +65,25 @@ function writePixel(pixelColor, samples) {
  * @param {HittableList} world
  * @returns {Vec3} - pixel color
  */
-function rayColor(ray, world) {
+function rayColor(ray, world, depth) {
   const hitRec = world.hit(ray, EPSILON, Infinity);
+  // if we reach the ray bounce limith return black (no more light is gathered).
+  if (depth <= 0) return Vec3.create();
   if (hitRec !== null) {
-    return hitRec.normal
-      .add(Vec3.create(), Vec3.fromValues(1, 1, 1))
-      .scale(Vec3.create(), 0.5);
+    // if we get a hit start bouncing off in random direction
+    // and stop bouncing when we dont hit anything or when we reach the depth limit.
+    // Diminish the color contribution of every bounce by 0.5.
+    const target = hitRec.point
+      .add(Vec3.create(), hitRec.normal)
+      .add(Vec3.create(), Vec3.randomUnitSphere());
+    const bounceRay = new Ray(
+      hitRec.point,
+      target.subtract(Vec3.create(), hitRec.point),
+    );
+    return rayColor(bounceRay, world, depth - 1).scale(
+      Vec3.create(),
+      0.5,
+    );
   }
 
   // Blends white and blue depending on the height of the y coordinate after scaling the ray direction to unit length

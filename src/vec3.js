@@ -69,6 +69,22 @@ class Vec3 {
     out.z = z * scale;
     return out;
   }
+
+  /**
+   * Generates a random vector in a unit sphere.
+   *
+   * @returns {Vec3} - random vector in a unit sphere
+   */
+  static randomUnitSphere() {
+    while (true) {
+      let p = Vec3.random(Vec3.create());
+      if (p.lengthSquared() >= 1) {
+        continue;
+      }
+      return p;
+    }
+  }
+
   /**
    * Calculates the length of the vector
    *

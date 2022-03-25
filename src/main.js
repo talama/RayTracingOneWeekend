@@ -1,16 +1,17 @@
 import { rayColor, writePixel } from './utils.js';
 import Vec3 from './vec3.js';
-import Ray from './ray.js';
 import HittableList from './hittableList.js';
 import Sphere from './sphere.js';
 import Camera from './camera.js';
+import fs from 'fs';
 
-(function () {
+(async function () {
   //Image
   const aspectRatio = 16.0 / 9.0;
   const imageWidth = 400;
   const imageHeight = Math.round(imageWidth / aspectRatio);
   const samples = 100;
+  const maxDepth = 50;
   const ppmHeader = `P3\n${imageWidth} ${imageHeight}\n255\n`;
 
   // World
@@ -22,10 +23,11 @@ import Camera from './camera.js';
 
   // Camera
   const cam = new Camera();
-
   // Render
   let t0 = performance.now();
-  console.log(ppmHeader);
+  const writeStream = fs.createWriteStream('./imgs/diffuse.ppm');
+  // console.log(ppmHeader);
+  writeStream.write(ppmHeader);
   for (let y = imageHeight - 1; y >= 0; y -= 1) {
     console.error('Scanline remaining: ', y);
     for (let x = 0; x < imageWidth; x += 1) {
@@ -36,13 +38,14 @@ import Camera from './camera.js';
         const ray = cam.getRay(u, v);
         pixelColor = pixelColor.add(
           Vec3.create(),
-          rayColor(ray, world),
+          rayColor(ray, world, maxDepth),
         );
       }
-      // console.error(writePixel(pixelColor, samples));
-      console.log(writePixel(pixelColor, samples));
+      writeStream.write(`${writePixel(pixelColor, samples)}\n`);
+      // console.log(`${writePixel(pixelColor, samples)}`);
     }
   }
+  writeStream.end();
   let t1 = performance.now();
   console.error(t1 - t0);
 })();
