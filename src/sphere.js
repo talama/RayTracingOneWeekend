@@ -8,10 +8,11 @@ import Vec3 from './vec3.js';
 import Ray from './ray.js';
 
 class Sphere extends Hittable {
-  constructor(center = Vec3.create(), radius = 1) {
+  constructor(center = Vec3.create(), radius = 1, material) {
     super();
     this.center = center;
     this.radius = radius;
+    this.material = material;
   }
   /**
    * Ray sphere intersection
@@ -53,6 +54,7 @@ class Sphere extends Hittable {
       .subtract(Vec3.create(), this.center)
       .scale(Vec3.create(), 1 / this.radius);
     hitRec.setFaceNormal(ray, outNormal);
+    hitRec.material = this.material;
     return hitRec;
   }
 }

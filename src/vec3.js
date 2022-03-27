@@ -1,3 +1,5 @@
+import { EPSILON } from './utils.js';
+
 /**
  * @class Vec3
  */
@@ -77,12 +79,26 @@ class Vec3 {
    */
   static randomUnitSphere() {
     while (true) {
-      let p = Vec3.random(Vec3.create());
-      if (p.lengthSquared() >= 1) {
+      let out = Vec3.random(Vec3.create());
+      if (out.lengthSquared() >= 1) {
         continue;
       }
-      return p;
+      return out;
     }
+  }
+
+  /**
+   * Reflects the vector on the normal axe.
+   *
+   * @param {Vec3} vector
+   * @param {Vec3} normal
+   * @returns {Vec3} - the reflected vector
+   */
+  static reflect(vector, normal) {
+    return vector.subtract(
+      Vec3.create(),
+      normal.scale(Vec3.create(), vector.dot(normal) * 2),
+    );
   }
 
   /**
@@ -237,6 +253,14 @@ class Vec3 {
     out.y = az * bx - ax * bz;
     out.z = ax * by - ay * bx;
     return out;
+  }
+
+  /**
+   *
+   * @returns {boolean} - returns true if the vector is close to zero in all directions.
+   */
+  nearZero() {
+    return this.x < EPSILON && this.y < EPSILON && this.z < EPSILON;
   }
 }
 

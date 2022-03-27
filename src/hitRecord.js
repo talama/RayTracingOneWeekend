@@ -8,6 +8,7 @@ class HitRecord {
   constructor() {
     this.point = Vec3.create();
     this.normal = Vec3.create();
+    this.material = null;
     this.t = 0.0;
     this.frontFace = true;
   }

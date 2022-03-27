@@ -70,20 +70,18 @@ function rayColor(ray, world, depth) {
   // if we reach the ray bounce limith return black (no more light is gathered).
   if (depth <= 0) return Vec3.create();
   if (hitRec !== null) {
-    // if we get a hit start bouncing off in random direction
+    // if we get a hit start bouncing off based on the hitRecord material scatter() function.
     // and stop bouncing when we dont hit anything or when we reach the depth limit.
-    // Diminish the color contribution of every bounce by 0.5.
-    const target = hitRec.point
-      .add(Vec3.create(), hitRec.normal)
-      .add(Vec3.create(), Vec3.randomUnitSphere());
-    const bounceRay = new Ray(
-      hitRec.point,
-      target.subtract(Vec3.create(), hitRec.point),
-    );
-    return rayColor(bounceRay, world, depth - 1).scale(
-      Vec3.create(),
-      0.5,
-    );
+    // Diminish the color contribution of every bounce by the material attenuation.
+    const scatter = hitRec.material.scatter(ray, hitRec);
+    if (scatter !== null) {
+      const attenuation = hitRec.material.color;
+      return rayColor(scatter, world, depth - 1).multiply(
+        Vec3.create(),
+        attenuation,
+      );
+    }
+    return Vec3.create();
   }
 
   // Blends white and blue depending on the height of the y coordinate after scaling the ray direction to unit length
