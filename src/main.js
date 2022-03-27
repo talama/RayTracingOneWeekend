@@ -20,8 +20,8 @@ import Metal from './metal.js';
   const world = new HittableList();
   const groundMat = new Lambert(Vec3.fromValues(0.8, 0.8, 0.0));
   const centerMat = new Lambert(Vec3.fromValues(0.7, 0.3, 0.3));
-  const leftMat = new Metal(Vec3.fromValues(0.8, 0.8, 0.8));
-  const rightMat = new Metal(Vec3.fromValues(0.8, 0.6, 0.2));
+  const leftMat = new Metal(Vec3.fromValues(0.8, 0.8, 0.8), 0.3);
+  const rightMat = new Metal(Vec3.fromValues(0.8, 0.6, 0.2), 1.0);
 
   const ground = new Sphere(
     Vec3.fromValues(0.0, -100.5, -1.0),
@@ -53,7 +53,7 @@ import Metal from './metal.js';
   const cam = new Camera();
   // Render
   let t0 = performance.now();
-  const writeStream = fs.createWriteStream('./imgs/material.ppm');
+  const writeStream = fs.createWriteStream('./imgs/blur.ppm');
   // console.log(ppmHeader);
   writeStream.write(ppmHeader);
   for (let y = imageHeight - 1; y >= 0; y -= 1) {
