@@ -1,4 +1,5 @@
 import Ray from './ray.js';
+import { degreeToRad } from './utils.js';
 import Vec3 from './vec3.js';
 
 /**
@@ -6,9 +7,11 @@ import Vec3 from './vec3.js';
  * @class Camera
  */
 class Camera {
-  constructor() {
-    this.aspectRatio = 16 / 9;
-    this.viewPortHeight = 2.0;
+  constructor(verticalFov, aspectRatio = 16 / 9) {
+    const theta = degreeToRad(verticalFov);
+    const h = Math.tan(theta / 2);
+    this.aspectRatio = aspectRatio;
+    this.viewPortHeight = 2.0 * h;
     this.viewPortWidth = this.aspectRatio * this.viewPortHeight;
     this.focalLength = 1.0;
 
