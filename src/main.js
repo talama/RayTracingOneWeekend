@@ -21,30 +21,54 @@ import Dielectric from './dielectric.js';
   const world = new HittableList();
   const groundMat = new Lambert(Vec3.fromValues(0.8, 0.8, 0.0));
   const centerMat = new Lambert(Vec3.fromValues(0.1, 0.2, 0.5));
-  const leftMat = new Lambert(Vec3.fromValues(0, 0, 1));
+  const leftMat = new Metal(Vec3.fromValues(0.8, 0.8, 0.8), 0.3);
   const glass = new Dielectric();
-  const rightMat = new Lambert(Vec3.fromValues(1, 0, 0));
+  const rightMat = new Metal(Vec3.fromValues(0.8, 0.6, 0.2), 0.0);
 
-  const R = Math.cos(Math.PI / 4);
+  const ground = new Sphere(
+    Vec3.fromValues(0.0, -100.5, -1.0),
+    100.0,
+    groundMat,
+  );
+  const centerSphere = new Sphere(
+    Vec3.fromValues(0.0, 0.0, -1.0),
+    0.5,
+    centerMat,
+  );
   const leftSphere = new Sphere(
-    Vec3.fromValues(-R, 0, -1),
-    R,
-    leftMat,
+    Vec3.fromValues(-1.0, 0.0, -1.0),
+    0.5,
+    glass,
+  );
+  const leftSphereInner = new Sphere(
+    Vec3.fromValues(-1.0, 0.0, -1.0),
+    -0.4,
+    glass,
   );
   const rightSphere = new Sphere(
-    Vec3.fromValues(R, 0, -1),
-    R,
+    Vec3.fromValues(1.0, 0.0, -1.0),
+    0.5,
     rightMat,
   );
 
+  world.add(ground);
+  world.add(centerSphere);
   world.add(leftSphere);
+  world.add(leftSphereInner);
   world.add(rightSphere);
 
   // Camera
-  const cam = new Camera(90.0);
+  const cam = new Camera(
+    Vec3.fromValues(-2, 2, 1),
+    Vec3.fromValues(0, 0, -1),
+    Vec3.fromValues(0, 1, 0),
+    20,
+    aspectRatio,
+  );
+
   // Render
   let t0 = performance.now();
-  const writeStream = fs.createWriteStream('./imgs/fov.ppm');
+  const writeStream = fs.createWriteStream('./imgs/camera.ppm');
   // console.log(ppmHeader);
   writeStream.write(ppmHeader);
   for (let y = imageHeight - 1; y >= 0; y -= 1) {
