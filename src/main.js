@@ -6,6 +6,7 @@ import Camera from './camera.js';
 import fs from 'fs';
 import Lambert from './lambert.js';
 import Metal from './metal.js';
+import Dielectric from './dielectric.js';
 
 (async function () {
   //Image
@@ -19,9 +20,10 @@ import Metal from './metal.js';
   // World
   const world = new HittableList();
   const groundMat = new Lambert(Vec3.fromValues(0.8, 0.8, 0.0));
-  const centerMat = new Lambert(Vec3.fromValues(0.7, 0.3, 0.3));
+  const centerMat = new Lambert(Vec3.fromValues(0.1, 0.2, 0.5));
   const leftMat = new Metal(Vec3.fromValues(0.8, 0.8, 0.8), 0.3);
-  const rightMat = new Metal(Vec3.fromValues(0.8, 0.6, 0.2), 1.0);
+  const glass = new Dielectric();
+  const rightMat = new Metal(Vec3.fromValues(0.8, 0.6, 0.2), 0.0);
 
   const ground = new Sphere(
     Vec3.fromValues(0.0, -100.5, -1.0),
@@ -36,7 +38,12 @@ import Metal from './metal.js';
   const leftSphere = new Sphere(
     Vec3.fromValues(-1.0, 0.0, -1.0),
     0.5,
-    leftMat,
+    glass,
+  );
+  const leftSphereInner = new Sphere(
+    Vec3.fromValues(-1.0, 0.0, -1.0),
+    -0.4,
+    glass,
   );
   const rightSphere = new Sphere(
     Vec3.fromValues(1.0, 0.0, -1.0),
@@ -47,13 +54,14 @@ import Metal from './metal.js';
   world.add(ground);
   world.add(centerSphere);
   world.add(leftSphere);
+  world.add(leftSphereInner);
   world.add(rightSphere);
 
   // Camera
   const cam = new Camera();
   // Render
   let t0 = performance.now();
-  const writeStream = fs.createWriteStream('./imgs/blur.ppm');
+  const writeStream = fs.createWriteStream('./imgs/hollow.ppm');
   // console.log(ppmHeader);
   writeStream.write(ppmHeader);
   for (let y = imageHeight - 1; y >= 0; y -= 1) {

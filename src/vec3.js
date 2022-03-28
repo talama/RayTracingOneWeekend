@@ -102,6 +102,35 @@ class Vec3 {
   }
 
   /**
+   * Refracts a vector around a normal.
+   * @param {Vec3} vector
+   * @param {Vec3} normal
+   * @param {Number} ior
+   *
+   * @returns {Vec3} - refracted vector
+   */
+  static refract(vector, normal, ior) {
+    // cosine of the angle between the normal and the vector
+    const cosTheta = Math.min(
+      vector.negate(Vec3.create()).dot(normal),
+      1.0,
+    );
+    // perpendicular component of the refracted vector
+    const outPerp = vector
+      .add(Vec3.create(), normal.scale(Vec3.create(), cosTheta))
+      .scale(Vec3.create(), ior);
+
+    // parallel component of the refracted vector.
+    const outParallel = normal.scale(
+      Vec3.create(),
+      -Math.sqrt(Math.abs(1.0 - outPerp.lengthSquared())),
+    );
+
+    // refracted vector
+    return outPerp.add(Vec3.create(), outParallel);
+  }
+
+  /**
    * Calculates the length of the vector
    *
    * @returns {Number} vector length
