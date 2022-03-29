@@ -58,17 +58,24 @@ import Dielectric from './dielectric.js';
   world.add(rightSphere);
 
   // Camera
+  const lookFrom = Vec3.fromValues(3, 3, 2);
+  const lookAt = Vec3.fromValues(0, 0, -1);
+  const vUp = Vec3.fromValues(0, 1, 0);
+  const aperture = 2.0;
+  const focusDist = lookFrom.subtract(Vec3.create(), lookAt).length();
   const cam = new Camera(
-    Vec3.fromValues(-2, 2, 1),
-    Vec3.fromValues(0, 0, -1),
-    Vec3.fromValues(0, 1, 0),
+    lookFrom,
+    lookAt,
+    vUp,
     20,
     aspectRatio,
+    aperture,
+    focusDist,
   );
 
   // Render
   let t0 = performance.now();
-  const writeStream = fs.createWriteStream('./imgs/camera.ppm');
+  const writeStream = fs.createWriteStream('./imgs/dof.ppm');
   // console.log(ppmHeader);
   writeStream.write(ppmHeader);
   for (let y = imageHeight - 1; y >= 0; y -= 1) {

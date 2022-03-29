@@ -75,7 +75,7 @@ class Vec3 {
   /**
    * Generates a random vector in a unit sphere.
    *
-   * @returns {Vec3} - random vector in a unit sphere
+   * @returns {Vec3}
    */
   static randomUnitSphere() {
     while (true) {
@@ -85,6 +85,21 @@ class Vec3 {
       }
       return out;
     }
+  }
+
+  /**
+   * Generates a random vector in a unit disk
+   *
+   * @returns {Vec3}
+   */
+  static randomUnitDisc() {
+    let p = Vec3.random(Vec3.create());
+    p.z = 0;
+    while (p.lengthSquared() >= 1) {
+      p = Vec3.random(Vec3.create());
+      p.z = 0;
+    }
+    return p;
   }
 
   /**
