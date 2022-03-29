@@ -1,6 +1,10 @@
+import Dielectric from './dielectric.js';
 import HitRecord from './hitRecord.js';
 import HittableList from './hittableList.js';
+import Lambert from './lambert.js';
+import Metal from './metal.js';
 import Ray from './ray.js';
+import Sphere from './sphere.js';
 import Vec3 from './vec3.js';
 
 const EPSILON = 0.000001;
@@ -102,4 +106,69 @@ function rayColor(ray, world, depth) {
   return comp1.add(Vec3.create(), comp2);
 }
 
-export { EPSILON, degreeToRad, writePixel, rayColor };
+/**
+ * Creates a random scene
+ *
+ */
+function randomScene() {
+  const world = new HittableList();
+
+  // ground
+  const groundMat = new Lambert(Vec3.fromValues(0.5, 0.5, 0.5));
+  const ground = new Sphere(
+    Vec3.fromValues(0, -1000, 0),
+    1000,
+    groundMat,
+  );
+  world.add(ground);
+
+  for (let a = -11; a < 11; a += 1) {
+    for (let b = -11; b < 11; b += 1) {
+      const chooseMat = Math.random();
+      const center = Vec3.fromValues(
+        a + 0.9 * Math.random(),
+        0.2,
+        b + 0.9 * Math.random(),
+      );
+
+      if (
+        center
+          .subtract(Vec3.create(), Vec3.fromValues(4, 0.2, 0))
+          .length() > 0.9
+      ) {
+        let sphereMat = null;
+        const color = Vec3.randomColor(Vec3.create()).multiply(
+          Vec3.create(),
+          Vec3.randomColor(Vec3.create()),
+        );
+        if (chooseMat < 0.7) {
+          // diffuse
+          sphereMat = new Lambert(color);
+          world.add(new Sphere(center, 0.2, sphereMat));
+        } else if (chooseMat < 0.9) {
+          // metal
+          const blur = Math.random() * 0.5;
+          sphereMat = new Metal(color, blur);
+          world.add(new Sphere(center, 0.2, sphereMat));
+        } else {
+          // glass
+          const sphereMat = new Dielectric(
+            Vec3.fromValues(1.0, 1.0, 1.0),
+            1.52,
+          );
+          world.add(new Sphere(center, 0.2, sphereMat));
+        }
+      }
+    }
+  }
+  const mat1 = new Dielectric();
+  world.add(new Sphere(Vec3.fromValues(0, 1, 0), 1, mat1));
+  const mat2 = new Lambert(Vec3.fromValues(0.4, 0.2, 0.1));
+  world.add(new Sphere(Vec3.fromValues(-4, 1, 0), 1, mat2));
+  const mat3 = new Metal(Vec3.fromValues(0.7, 0.6, 0.5), 0);
+  world.add(new Sphere(Vec3.fromValues(4, 1, 0), 1, mat3));
+
+  return world;
+}
+
+export { EPSILON, degreeToRad, writePixel, rayColor, randomScene };

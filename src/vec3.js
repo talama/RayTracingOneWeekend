@@ -72,6 +72,13 @@ class Vec3 {
     return out;
   }
 
+  static randomColor(out, min = 0, max = 1) {
+    out.x = Math.random() * (max - min) + min;
+    out.y = Math.random() * (max - min) + min;
+    out.z = Math.random() * (max - min) + min;
+    return out;
+  }
+
   /**
    * Generates a random vector in a unit sphere.
    *
