@@ -1,82 +1,81 @@
+/* eslint-disable prefer-destructuring */
 import { EPSILON } from './utils.js';
 
 /**
  * @class Vec3
  */
 class Vec3 {
-  constructor() {
+  /**
+   *
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} z
+   */
+  constructor(x = 0, y = 0, z = 0) {
     this.data = new Float32Array(3);
+    this.data[0] = x;
+    this.data[1] = y;
+    this.data[2] = z;
+  }
+
+  /**
+   * Getters and setters for the vector components
+   */
+  set x(x) {
+    this.data[0] = x;
   }
 
   get x() {
     return this.data[0];
   }
 
-  get y() {
-    return this.data[1];
-  }
-
-  get z() {
-    return this.data[2];
-  }
-
-  set x(x) {
-    this.data[0] = x;
-  }
-
   set y(y) {
     this.data[1] = y;
+  }
+
+  get y() {
+    return this.data[1];
   }
 
   set z(z) {
     this.data[2] = z;
   }
 
-  static create() {
-    return new Vec3();
-  }
-  /**
-   * Creates new Vec3 with coordinates set at the given values
-   *
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} z
-   * @returns {Vec3} a new Vec3
-   */
-  static fromValues(x, y, z) {
-    const out = Vec3.create();
-    out.x = x;
-    out.y = y;
-    out.z = z;
-    return out;
+  get z() {
+    return this.data[2];
   }
 
   // from glMatrix
   /**
    * Generates a random vector with the given scale
    *
-   * @param {Vec3} out the receiving vector
    * @param {Number} [scale] Length of the resulting vector. If omitted, a unit vector will be returned
    * @returns {Vec3} out
    */
-  static random(out, scale) {
-    scale = scale === undefined ? 1.0 : scale;
+  static randomGLX(scale = 1) {
+    const r = Math.random() * 2.0 * Math.PI;
+    const z = Math.random() * 2.0 - 1.0;
+    const zScale = Math.sqrt(1.0 - z * z) * scale;
 
-    let r = Math.random() * 2.0 * Math.PI;
-    let z = Math.random() * 2.0 - 1.0;
-    let zScale = Math.sqrt(1.0 - z * z) * scale;
-
-    out.x = Math.cos(r) * zScale;
-    out.y = Math.sin(r) * zScale;
-    out.z = z * scale;
-    return out;
+    return new Vec3(
+      Math.cos(r) * zScale,
+      Math.sin(r) * zScale,
+      z * scale,
+    );
   }
 
-  static randomColor(out, min = 0, max = 1) {
-    out.x = Math.random() * (max - min) + min;
-    out.y = Math.random() * (max - min) + min;
-    out.z = Math.random() * (max - min) + min;
-    return out;
+  /**
+   *
+   * @param {Number} min
+   * @param {Number} max
+   * @returns {Vec3} - returns a random non nomrmalized vector with components in the interval [min, max]
+   */
+  static random(min = 0, max = 1) {
+    return new Vec3(
+      Math.random() * (max - min) + min,
+      Math.random() * (max - min) + min,
+      Math.random() * (max - min) + min,
+    );
   }
 
   /**
@@ -85,13 +84,11 @@ class Vec3 {
    * @returns {Vec3}
    */
   static randomUnitSphere() {
-    while (true) {
-      let out = Vec3.random(Vec3.create());
-      if (out.lengthSquared() >= 1) {
-        continue;
-      }
-      return out;
+    let out = Vec3.random(-1, 1);
+    while (out.lengthSquared() >= 1) {
+      out = Vec3.random(-1, 1);
     }
+    return out;
   }
 
   /**
@@ -100,27 +97,23 @@ class Vec3 {
    * @returns {Vec3}
    */
   static randomUnitDisc() {
-    let p = Vec3.random(Vec3.create());
-    p.z = 0;
-    while (p.lengthSquared() >= 1) {
-      p = Vec3.random(Vec3.create());
-      p.z = 0;
+    let out = Vec3.random(-1, 1);
+    out.data[2] = 0;
+    while (out.lengthSquared() >= 1) {
+      out = Vec3.random(-1, 1);
+      out.data[2] = 0;
     }
-    return p;
+    return out;
   }
 
   /**
    * Reflects the vector on the normal axe.
-   *
    * @param {Vec3} vector
    * @param {Vec3} normal
    * @returns {Vec3} - the reflected vector
    */
   static reflect(vector, normal) {
-    return vector.subtract(
-      Vec3.create(),
-      normal.scale(Vec3.create(), vector.dot(normal) * 2),
-    );
+    return vector.subtract(normal.scale(vector.dot(normal) * 2));
   }
 
   /**
@@ -133,23 +126,17 @@ class Vec3 {
    */
   static refract(vector, normal, ior) {
     // cosine of the angle between the normal and the vector
-    const cosTheta = Math.min(
-      vector.negate(Vec3.create()).dot(normal),
-      1.0,
-    );
+    const cosTheta = Math.min(vector.negate().dot(normal), 1.0);
     // perpendicular component of the refracted vector
-    const outPerp = vector
-      .add(Vec3.create(), normal.scale(Vec3.create(), cosTheta))
-      .scale(Vec3.create(), ior);
+    const outPerp = vector.add(normal.scale(cosTheta)).scale(ior);
 
     // parallel component of the refracted vector.
     const outParallel = normal.scale(
-      Vec3.create(),
       -Math.sqrt(Math.abs(1.0 - outPerp.lengthSquared())),
     );
 
     // refracted vector
-    return outPerp.add(Vec3.create(), outParallel);
+    return outPerp.add(outParallel);
   }
 
   /**
@@ -158,10 +145,7 @@ class Vec3 {
    * @returns {Number} vector length
    */
   length() {
-    const x = this.x;
-    const y = this.y;
-    const z = this.z;
-    return Math.hypot(x, y, z);
+    return Math.sqrt(this.lengthSquared());
   }
 
   /**
@@ -170,140 +154,132 @@ class Vec3 {
    * @returns {Number} length squared
    */
   lengthSquared() {
-    const x = this.x;
-    const y = this.y;
-    const z = this.z;
-    return x * x + y * y + z * z;
+    return (
+      this.data[0] * this.data[0] +
+      this.data[1] * this.data[1] +
+      this.data[2] * this.data[2]
+    );
   }
 
   /**
-   *  Adds two vectors and returns the resulting Vec3
+   * Adds two vectors and returns the resulting Vec3
    *
-   * @param {Vec3} out
-   * @param {Vec3} vecB
+   * @param {Vec3} vector
    * @returns {Vec3} out
    */
-  add(out, vecB) {
-    out.x = this.x + vecB.x;
-    out.y = this.y + vecB.y;
-    out.z = this.z + vecB.z;
-    return out;
+  add(vector) {
+    return new Vec3(
+      this.data[0] + vector.data[0],
+      this.data[1] + vector.data[1],
+      this.data[2] + vector.data[2],
+    );
   }
 
   /**
-   *  Subtracts two vectors and returns the resulting Vec3
+   * Subtracts two vectors and returns the resulting Vec3
    *
-   * @param {Vec3} out
-   * @param {Vec3} vecB
+   * @param {Vec3} vector
    * @returns {Vec3} out
    */
-  subtract(out, vecB) {
-    out.x = this.x - vecB.x;
-    out.y = this.y - vecB.y;
-    out.z = this.z - vecB.z;
-    return out;
+  subtract(vector) {
+    return new Vec3(
+      this.data[0] - vector.data[0],
+      this.data[1] - vector.data[1],
+      this.data[2] - vector.data[2],
+    );
   }
 
   /**
-   *  Multiply two vectors and returns the resulting Vec3
+   * Multiply two vectors and returns the resulting Vec3
    *
-   * @param {Vec3} out
-   * @param {Vec3} vecB
+   * @param {Vec3} vector
    * @returns {Vec3} out
    */
-  multiply(out, vecB) {
-    out.x = this.x * vecB.x;
-    out.y = this.y * vecB.y;
-    out.z = this.z * vecB.z;
-    return out;
+  multiply(vector) {
+    return new Vec3(
+      this.data[0] * vector.data[0],
+      this.data[1] * vector.data[1],
+      this.data[2] * vector.data[2],
+    );
   }
 
   /**
-   *  Divide two vectors and returns the resulting Vec3
+   * Divide two vectors and returns the resulting Vec3
    *
-   * @param {Vec3} out
-   * @param {Vec3} vecB
+   * @param {Vec3} vector
    * @returns {Vec3} out
    */
-  divide(out, vecB) {
-    out.x = this.x / vecB.x;
-    out.y = this.y / vecB.y;
-    out.z = this.z / vecB.z;
-    return out;
+  divide(vector) {
+    return new Vec3(
+      this.data[0] / vector.data[0],
+      this.data[1] / vector.data[1],
+      this.data[2] / vector.data[2],
+    );
   }
 
   /**
    * Scales the vector by the input scalar.
    *
-   * @param {Vec3} out
    * @param {Number} scalar
    * @returns {Vec3} out
    */
-  scale(out, scalar) {
-    out.x = this.x * scalar;
-    out.y = this.y * scalar;
-    out.z = this.z * scalar;
-    return out;
+  scale(scalar) {
+    return new Vec3(
+      this.data[0] * scalar,
+      this.data[1] * scalar,
+      this.data[2] * scalar,
+    );
   }
 
   /**
    * Negates the component of the vector.
-   * @param {Vec3} out
    * @returns {Vec3}
    */
-  negate(out) {
-    out.x = -this.x;
-    out.y = -this.y;
-    out.z = -this.z;
-    return out;
+  negate() {
+    return new Vec3(-this.data[0], -this.data[1], -this.data[2]);
   }
 
   /**
    * Normalize the vector and returns the result.
    *
-   * @param {Vec3} out
    * @returns {Vec3} out
    */
-  normalize(out) {
-    const x = this.x;
-    const y = this.y;
-    const z = this.z;
-    let len = x * x + y * y + z * z;
-    if (len > 0) len = 1 / Math.sqrt(len);
-    out.x = this.x * len;
-    out.y = this.y * len;
-    out.z = this.z * len;
-    return out;
+  normalize() {
+    const len = this.length();
+    return new Vec3(
+      this.data[0] / len,
+      this.data[1] / len,
+      this.data[2] / len,
+    );
   }
 
   /**
    * Calculates the dot product of the two input Vec3
    *
-   * @param {Vec3} vecB
+   * @param {Vec3} vector
    * @returns {Number} the dot product
    */
-  dot(vecB) {
-    return this.x * vecB.x + this.y * vecB.y + this.z * vecB.z;
+  dot(vector) {
+    return (
+      this.data[0] * vector.data[0] +
+      this.data[1] * vector.data[1] +
+      this.data[2] * vector.data[2]
+    );
   }
 
   /**
    * Calculates the cross product of two vectors
    *
    * @param {Vec3} out
-   * @param {Vec3} vecB
+   * @param {Vec3} vector
    * @returns {Vec3} out - the cross product
    */
-  cross(out, vecB) {
-    let ax = this.x,
-      ay = this.y,
-      az = this.z;
-    let bx = vecB.x,
-      by = vecB.y,
-      bz = vecB.z;
-    out.x = ay * bz - az * by;
-    out.y = az * bx - ax * bz;
-    out.z = ax * by - ay * bx;
-    return out;
+  cross(vector) {
+    return new Vec3(
+      this.data[1] * vector.data[2] - this.data[2] * vector.data[1],
+      this.data[2] * vector.data[0] - this.data[0] * vector.data[2],
+      this.data[0] * vector.data[1] - this.data[1] * vector.data[0],
+    );
   }
 
   /**
@@ -311,7 +287,11 @@ class Vec3 {
    * @returns {boolean} - returns true if the vector is close to zero in all directions.
    */
   nearZero() {
-    return this.x < EPSILON && this.y < EPSILON && this.z < EPSILON;
+    return (
+      this.data[0] < EPSILON &&
+      this.data[1] < EPSILON &&
+      this.data[2] < EPSILON
+    );
   }
 }
 

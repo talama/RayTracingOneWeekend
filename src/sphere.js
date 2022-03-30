@@ -6,14 +6,20 @@ import HitRecord from './hitRecord.js';
 import Hittable from './hittable.js';
 import Vec3 from './vec3.js';
 import Ray from './ray.js';
+import Lambert from './lambert.js';
 
 class Sphere extends Hittable {
-  constructor(center = Vec3.create(), radius = 1, material) {
+  constructor(
+    center = new Vec3(),
+    radius = 1,
+    material = new Lambert(new Vec3(0.5, 0.5, 0.5)),
+  ) {
     super();
     this.center = center;
     this.radius = radius;
     this.material = material;
   }
+
   /**
    * Ray sphere intersection
    * @param {Ray} ray
@@ -22,10 +28,7 @@ class Sphere extends Hittable {
    * @returns {HitRecord||null} - HitRecord of the intersection or null if no intersection
    */
   hit(ray, tMin, tMax) {
-    const originCenter = ray.origin.subtract(
-      Vec3.create(),
-      this.center,
-    );
+    const originCenter = ray.origin.subtract(this.center);
     const a = ray.direction.lengthSquared();
     const halfb = originCenter.dot(ray.direction);
     const c =
@@ -51,8 +54,8 @@ class Sphere extends Hittable {
     hitRec.point = ray.pointAt(hitRec.t);
     // calculate normal and set face normal to make sure it always points outwards
     const outNormal = hitRec.point
-      .subtract(Vec3.create(), this.center)
-      .scale(Vec3.create(), 1 / this.radius);
+      .subtract(this.center)
+      .scale(1 / this.radius);
     hitRec.setFaceNormal(ray, outNormal);
     hitRec.material = this.material;
     return hitRec;

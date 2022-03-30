@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import Ray from './ray.js';
 import { degreeToRad } from './utils.js';
 import Vec3 from './vec3.js';
@@ -42,38 +43,19 @@ class Camera {
     lookFrom and LookAt and vUp (up) */
     this.origin = lookFrom;
 
-    this.w = lookFrom
-      .subtract(Vec3.create(), lookAt)
-      .normalize(Vec3.create());
+    this.w = lookFrom.subtract(lookAt).normalize();
 
-    this.u = vUp
-      .cross(Vec3.create(), this.w)
-      .normalize(Vec3.create());
+    this.u = vUp.cross(this.w).normalize();
 
-    this.v = this.w.cross(Vec3.create(), this.u);
+    this.v = this.w.cross(this.u);
 
     this.origin = lookFrom;
-    this.horizontal = this.u.scale(
-      Vec3.create(),
-      this.focusDist * viewportWidth,
-    );
-    this.vertical = this.v.scale(
-      Vec3.create(),
-      focusDist * viewportHeight,
-    );
+    this.horizontal = this.u.scale(this.focusDist * viewportWidth);
+    this.vertical = this.v.scale(focusDist * viewportHeight);
     this.lowerLeft = this.origin
-      .subtract(
-        Vec3.create(),
-        this.horizontal.scale(Vec3.create(), 0.5),
-      )
-      .subtract(
-        Vec3.create(),
-        this.vertical.scale(Vec3.create(), 0.5),
-      )
-      .subtract(
-        Vec3.create(),
-        this.w.scale(Vec3.create(), focusDist),
-      );
+      .subtract(this.horizontal.scale(0.5))
+      .subtract(this.vertical.scale(0.5))
+      .subtract(this.w.scale(focusDist));
   }
 
   /**
@@ -83,20 +65,15 @@ class Camera {
    * @returns {Ray} - ray pointing from point on camera with coord [u, v] to corresponding point on pixel with coord [x, y]
    */
   getRay(s, t) {
-    const rd = Vec3.randomUnitDisc().scale(
-      Vec3.create(),
-      this.aperture / 2,
-    );
-    const offset = this.u
-      .scale(Vec3.create(), rd.x)
-      .add(Vec3.create(), this.v.scale(Vec3.create(), rd.y));
+    const rd = Vec3.randomUnitDisc().scale(this.aperture / 2);
+    const offset = this.u.scale(rd.x).add(this.v.scale(rd.y));
 
     const direction = this.lowerLeft
-      .add(Vec3.create(), this.horizontal.scale(Vec3.create(), s))
-      .add(Vec3.create(), this.vertical.scale(Vec3.create(), t))
-      .subtract(Vec3.create(), this.origin)
-      .subtract(Vec3.create(), offset);
-    return new Ray(this.origin.add(Vec3.create(), offset), direction);
+      .add(this.horizontal.scale(s))
+      .add(this.vertical.scale(t))
+      .subtract(this.origin)
+      .subtract(offset);
+    return new Ray(this.origin.add(offset), direction);
   }
 }
 

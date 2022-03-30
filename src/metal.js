@@ -11,7 +11,7 @@ class Metal extends Material {
    *
    * @param {Vec3} color
    */
-  constructor(color = Vec3.fromValues(0.5, 0.5, 0.5), blur = 0) {
+  constructor(color = new Vec3(0.5, 0.5, 0.5), blur = 0) {
     super();
     this.color = color;
     this.blur = blur < 1 ? blur : 1;
@@ -28,12 +28,11 @@ class Metal extends Material {
     let reflected = Vec3.reflect(
       ray.direction,
       hitRecord.normal,
-    ).normalize(Vec3.create());
+    ).normalize();
 
     // add blur if any
     reflected = reflected.add(
-      Vec3.create(),
-      Vec3.randomUnitSphere().scale(Vec3.create, this.blur),
+      Vec3.randomUnitSphere().scale(this.blur),
     );
 
     // return reflected ray if any

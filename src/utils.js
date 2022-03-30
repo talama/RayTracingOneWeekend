@@ -70,9 +70,9 @@ function writePixel(pixelColor, samples) {
  * @returns {Vec3} - pixel color
  */
 function rayColor(ray, world, depth) {
-  const hitRec = world.hit(ray, EPSILON, Infinity);
+  const hitRec = world.hit(ray, 0.1, Infinity);
   // if we reach the ray bounce limith return black (no more light is gathered).
-  if (depth <= 0) return Vec3.create();
+  if (depth <= 0) return new Vec3();
   if (hitRec !== null) {
     // if we get a hit start bouncing off based on the hitRecord material scatter() function.
     // and stop bouncing when we dont hit anything or when we reach the depth limit.
@@ -81,11 +81,10 @@ function rayColor(ray, world, depth) {
     if (scatter !== null) {
       const attenuation = hitRec.material.color;
       return rayColor(scatter, world, depth - 1).multiply(
-        Vec3.create(),
         attenuation,
       );
     }
-    return Vec3.create();
+    return new Vec3();
   }
 
   // Blends white and blue depending on the height of the y coordinate after scaling the ray direction to unit length
@@ -93,17 +92,11 @@ function rayColor(ray, world, depth) {
   // to the color in addition to the vertical gradient. We scale the result to the range (0.0 < t < 10).
   //
   // blendedValue=(1−t) * startValue + t * endValue
-  const direction = ray.direction.normalize(Vec3.create());
+  const direction = ray.direction.normalize();
   const t = 0.5 * (direction.y + 1.0);
-  const comp1 = Vec3.fromValues(1.0, 1.0, 1.0).scale(
-    Vec3.create(),
-    1.0 - t,
-  );
-  const comp2 = Vec3.fromValues(0.5, 0.7, 1.0).scale(
-    Vec3.create(),
-    t,
-  );
-  return comp1.add(Vec3.create(), comp2);
+  const comp1 = new Vec3(1.0, 1.0, 1.0).scale(1.0 - t);
+  const comp2 = new Vec3(0.5, 0.7, 1.0).scale(t);
+  return comp1.add(comp2);
 }
 
 /**
@@ -114,33 +107,22 @@ function randomScene() {
   const world = new HittableList();
 
   // ground
-  const groundMat = new Lambert(Vec3.fromValues(0.5, 0.5, 0.5));
-  const ground = new Sphere(
-    Vec3.fromValues(0, -1000, 0),
-    1000,
-    groundMat,
-  );
+  const groundMat = new Lambert(new Vec3(0.5, 0.5, 0.5));
+  const ground = new Sphere(new Vec3(0, -1000, 0), 1000, groundMat);
   world.add(ground);
 
   for (let a = -11; a < 11; a += 1) {
     for (let b = -11; b < 11; b += 1) {
       const chooseMat = Math.random();
-      const center = Vec3.fromValues(
+      const center = new Vec3(
         a + 0.9 * Math.random(),
         0.2,
         b + 0.9 * Math.random(),
       );
 
-      if (
-        center
-          .subtract(Vec3.create(), Vec3.fromValues(4, 0.2, 0))
-          .length() > 0.9
-      ) {
+      if (center.subtract(new Vec3(4, 0.2, 0)).length() > 0.9) {
         let sphereMat = null;
-        const color = Vec3.randomColor(Vec3.create()).multiply(
-          Vec3.create(),
-          Vec3.randomColor(Vec3.create()),
-        );
+        const color = Vec3.random().multiply(Vec3.random());
         if (chooseMat < 0.7) {
           // diffuse
           sphereMat = new Lambert(color);
@@ -152,21 +134,18 @@ function randomScene() {
           world.add(new Sphere(center, 0.2, sphereMat));
         } else {
           // glass
-          const sphereMat = new Dielectric(
-            Vec3.fromValues(1.0, 1.0, 1.0),
-            1.52,
-          );
+          sphereMat = new Dielectric(new Vec3(1.0, 1.0, 1.0), 1.52);
           world.add(new Sphere(center, 0.2, sphereMat));
         }
       }
     }
   }
   const mat1 = new Dielectric();
-  world.add(new Sphere(Vec3.fromValues(0, 1, 0), 1, mat1));
-  const mat2 = new Lambert(Vec3.fromValues(0.4, 0.2, 0.1));
-  world.add(new Sphere(Vec3.fromValues(-4, 1, 0), 1, mat2));
-  const mat3 = new Metal(Vec3.fromValues(0.7, 0.6, 0.5), 0);
-  world.add(new Sphere(Vec3.fromValues(4, 1, 0), 1, mat3));
+  world.add(new Sphere(new Vec3(0, 1, 0), 1, mat1));
+  const mat2 = new Lambert(new Vec3(0.4, 0.2, 0.1));
+  world.add(new Sphere(new Vec3(-4, 1, 0), 1, mat2));
+  const mat3 = new Metal(new Vec3(0.7, 0.6, 0.5), 0);
+  world.add(new Sphere(new Vec3(4, 1, 0), 1, mat3));
 
   return world;
 }

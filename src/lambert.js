@@ -11,7 +11,7 @@ class Lambert extends Material {
    *
    * @param {Vec3} color
    */
-  constructor(color = Vec3.fromValues(0.5, 0.5, 0.5)) {
+  constructor(color = new Vec3(0.5, 0.5, 0.5)) {
     super();
     this.color = color;
   }
@@ -24,7 +24,6 @@ class Lambert extends Material {
   scatter(ray, hitRecord) {
     // calculate scatter direction
     let scatterDirection = hitRecord.normal.add(
-      Vec3.create(),
       Vec3.randomUnitSphere(),
     );
 

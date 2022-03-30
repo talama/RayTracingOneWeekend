@@ -15,9 +15,7 @@ class Ray {
    * @returns {Vec3} - the point at t
    */
   pointAt(t) {
-    return this.direction
-      .scale(Vec3.create(), t)
-      .add(Vec3.create(), this.origin);
+    return this.direction.scale(t).add(this.origin);
   }
 }
 

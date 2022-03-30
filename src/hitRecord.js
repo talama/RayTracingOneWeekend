@@ -6,8 +6,8 @@ import { EPSILON } from './utils.js';
  */
 class HitRecord {
   constructor() {
-    this.point = Vec3.create();
-    this.normal = Vec3.create();
+    this.point = new Vec3();
+    this.normal = new Vec3();
     this.material = null;
     this.t = 0.0;
     this.frontFace = true;
@@ -24,7 +24,7 @@ class HitRecord {
   setFaceNormal(ray, outwardNormal) {
     this.frontFace = ray.direction.dot(outwardNormal) < EPSILON;
     if (this.frontFace) this.normal = outwardNormal;
-    else this.normal = outwardNormal.negate(Vec3.create());
+    else this.normal = outwardNormal.negate();
   }
 }
 

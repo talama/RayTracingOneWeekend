@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /**
  * @class Dielectric
  */
@@ -12,7 +13,7 @@ class Dielectric extends Material {
    * @param {Vec3} color
    * @param {Number} ior
    */
-  constructor(color = Vec3.fromValues(1.0, 1.0, 1, 0), ior = 1.52) {
+  constructor(color = new Vec3(1.0, 1.0, 1, 0), ior = 1.52) {
     super();
     this.color = color;
     this.ior = ior;
@@ -26,10 +27,10 @@ class Dielectric extends Material {
    */
   scatter(ray, hitRec) {
     const refractRatio = hitRec.frontFace ? 1.0 / this.ior : this.ior;
-    const unitDirection = ray.direction.normalize(Vec3.create());
+    const unitDirection = ray.direction.normalize();
 
     const cosTheta = Math.min(
-      unitDirection.negate(Vec3.create()).dot(hitRec.normal),
+      unitDirection.negate().dot(hitRec.normal),
       1.0,
     );
     const sinTheta = Math.sqrt();
