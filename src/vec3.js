@@ -1,6 +1,3 @@
-/* eslint-disable prefer-destructuring */
-import { EPSILON } from './utils.js';
-
 /**
  * @class Vec3
  */
@@ -287,10 +284,11 @@ class Vec3 {
    * @returns {boolean} - returns true if the vector is close to zero in all directions.
    */
   nearZero() {
+    const epsilon = 0.00000001;
     return (
-      this.data[0] < EPSILON &&
-      this.data[1] < EPSILON &&
-      this.data[2] < EPSILON
+      this.data[0] < epsilon &&
+      this.data[1] < epsilon &&
+      this.data[2] < epsilon
     );
   }
 }

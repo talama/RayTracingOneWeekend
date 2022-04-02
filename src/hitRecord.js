@@ -1,5 +1,4 @@
 import Vec3 from './vec3.js';
-import { EPSILON } from './utils.js';
 
 /**
  * @class HitRecord
@@ -22,7 +21,7 @@ class HitRecord {
    * @param {Vec3} outwardNormal
    */
   setFaceNormal(ray, outwardNormal) {
-    this.frontFace = ray.direction.dot(outwardNormal) < EPSILON;
+    this.frontFace = ray.direction.dot(outwardNormal) < 0.0001;
     if (this.frontFace) this.normal = outwardNormal;
     else this.normal = outwardNormal.negate();
   }

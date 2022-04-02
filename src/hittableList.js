@@ -1,7 +1,6 @@
 /**
  * @class HittableList
  */
-
 import HitRecord from './hitRecord.js';
 
 class HittableList {

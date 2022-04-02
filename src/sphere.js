@@ -5,7 +5,6 @@
 import HitRecord from './hitRecord.js';
 import Hittable from './hittable.js';
 import Vec3 from './vec3.js';
-import Ray from './ray.js';
 import Lambert from './lambert.js';
 
 class Sphere extends Hittable {

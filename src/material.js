@@ -1,4 +1,3 @@
-import HitRecord from './hitRecord.js';
 import Vec3 from './vec3.js';
 
 /**
@@ -22,7 +21,7 @@ class Material {
    * @param {HitRecord} hitRecord
    * @returns {Ray|null} - returns the scattered ray or null if none.
    */
-  scatter(ray, hitRecord) {
+  scatter() {
     throw new Error(
       'Method scatter(ray, hitRecord, attenuation) must be implemented.',
     );

@@ -1,22 +1,18 @@
 /* eslint-disable import/extensions */
-import { performance } from 'perf_hooks';
-import { rayColor, writePixel, randomScene } from './utils.js';
-import Vec3 from './vec3.js';
-import HittableList from './hittableList.js';
-import Sphere from './sphere.js';
-import Camera from './camera.js';
 import fs from 'fs';
-import Lambert from './lambert.js';
-import Metal from './metal.js';
-import Dielectric from './dielectric.js';
+import { performance } from 'perf_hooks';
+import Vec3 from './vec3.js';
+import { rayColor, writePixel, randomScene } from './utils.js';
+import Camera from './camera.js';
 
-(async function () {
+(function () {
   // Image
   const aspectRatio = 16.0 / 9.0;
-  const imageWidth = 300;
+  const imageWidth = 100;
   const imageHeight = Math.round(imageWidth / aspectRatio);
   const samples = 100;
   const maxDepth = 25;
+  const gamma = 2.0;
   const ppmHeader = `P3\n${imageWidth} ${imageHeight}\n255\n`;
 
   // World
@@ -28,12 +24,13 @@ import Dielectric from './dielectric.js';
   const vUp = new Vec3(0, 1, 0);
   const focusDist = 10.0;
   const aperture = 0.1;
+  const vFov = 20.0;
 
   const cam = new Camera(
     lookFrom,
     lookAt,
     vUp,
-    20,
+    vFov,
     aspectRatio,
     aperture,
     focusDist,
@@ -54,11 +51,21 @@ import Dielectric from './dielectric.js';
         const ray = cam.getRay(u, v);
         pixelColor = rayColor(ray, world, maxDepth).add(pixelColor);
       }
-      writeStream.write(`${writePixel(pixelColor, samples)}\n`);
+      writeStream.write(
+        `${writePixel(pixelColor, samples, gamma)}\n`,
+      );
       // console.log(`${writePixel(pixelColor, samples)}`);
     }
   }
   writeStream.end();
   const t1 = performance.now();
-  console.error(t1 - t0);
+  let seconds = (t1 - t0) / 1000;
+  let minutes = 0;
+  if (seconds > 60) {
+    minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+  }
+  console.error(
+    `${t1 - t0}milliseconds = ${minutes} min and ${seconds} sec`,
+  );
 })();

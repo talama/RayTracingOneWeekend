@@ -1,5 +1,3 @@
-import HitRecord from './hitRecord.js';
-
 /**
  * Abstract class Hittable
  *

@@ -1,6 +1,12 @@
 {
   "extends": ["airbnb-base", "prettier"],
   "rules": {
+    "import/extensions": [
+      "error",
+      {
+          "js": "ignorePackages"
+      }
+    ],
     "no-unused-vars": "warn",
     "no-console": "off",
     "func-names": "off",

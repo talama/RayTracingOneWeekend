@@ -1,13 +1,11 @@
 import Dielectric from './dielectric.js';
-import HitRecord from './hitRecord.js';
 import HittableList from './hittableList.js';
 import Lambert from './lambert.js';
 import Metal from './metal.js';
-import Ray from './ray.js';
 import Sphere from './sphere.js';
 import Vec3 from './vec3.js';
 
-const EPSILON = 0.000001;
+const EPSILON = 0.00001;
 
 const degree = Math.PI / 180;
 
@@ -45,7 +43,7 @@ const ppmScale = function (num) {
  * @param {Vec3} pixelColor
  * @returns {Strings}
  */
-function writePixel(pixelColor, samples) {
+function writePixel(pixelColor, samples, gamma) {
   let r = pixelColor.x;
   let g = pixelColor.y;
   let b = pixelColor.z;
@@ -53,9 +51,15 @@ function writePixel(pixelColor, samples) {
   // Divide the color by the number of spamples and gamma correct for gamma = 2.0
   // (color ^ 1/gamma  -> color ^ 1/2 -> sqrt(color))
   const scale = 1.0 / samples;
-  r = Math.sqrt(scale * r);
-  g = Math.sqrt(scale * g);
-  b = Math.sqrt(scale * b);
+  if (gamma === 2) {
+    r = Math.sqrt(r * scale);
+    g = Math.sqrt(g * scale);
+    b = Math.sqrt(b * scale);
+  } else {
+    r = (r * scale) ** (1 / gamma);
+    g = (g * scale) ** (1 / gamma);
+    b = (b * scale) ** (1 / gamma);
+  }
 
   // write the value of each color component
   // scaled to the [0, 255] range

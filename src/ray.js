@@ -1,5 +1,3 @@
-import Vec3 from './vec3.js';
-
 /**
  * @class Ray
  */
