@@ -9,21 +9,18 @@ class Vec3 {
    * @param {Number} z
    */
   constructor(x = 0, y = 0, z = 0) {
-    this.data = new Float32Array(3);
-    this.data[0] = x;
-    this.data[1] = y;
-    this.data[2] = z;
+    this.data = [x, y, z];
   }
 
   /**
    * Getters and setters for the vector components
    */
-  set x(x) {
-    this.data[0] = x;
-  }
-
   get x() {
     return this.data[0];
+  }
+
+  set x(x) {
+    this.data[0] = x;
   }
 
   set y(y) {
@@ -40,25 +37,6 @@ class Vec3 {
 
   get z() {
     return this.data[2];
-  }
-
-  // from glMatrix
-  /**
-   * Generates a random vector with the given scale
-   *
-   * @param {Number} [scale] Length of the resulting vector. If omitted, a unit vector will be returned
-   * @returns {Vec3} out
-   */
-  static randomGLX(scale = 1) {
-    const r = Math.random() * 2.0 * Math.PI;
-    const z = Math.random() * 2.0 - 1.0;
-    const zScale = Math.sqrt(1.0 - z * z) * scale;
-
-    return new Vec3(
-      Math.cos(r) * zScale,
-      Math.sin(r) * zScale,
-      z * scale,
-    );
   }
 
   /**
@@ -104,48 +82,6 @@ class Vec3 {
   }
 
   /**
-   * Reflects the vector on the normal axe.
-   * @param {Vec3} vector
-   * @param {Vec3} normal
-   * @returns {Vec3} - the reflected vector
-   */
-  static reflect(vector, normal) {
-    return vector.subtract(normal.scale(vector.dot(normal) * 2));
-  }
-
-  /**
-   * Refracts a vector around a normal.
-   * @param {Vec3} vector
-   * @param {Vec3} normal
-   * @param {Number} ior
-   *
-   * @returns {Vec3} - refracted vector
-   */
-  static refract(vector, normal, ior) {
-    // cosine of the angle between the normal and the vector
-    const cosTheta = Math.min(vector.negate().dot(normal), 1.0);
-    // perpendicular component of the refracted vector
-    const outPerp = vector.add(normal.scale(cosTheta)).scale(ior);
-
-    // parallel component of the refracted vector.
-    const outParallel = normal.scale(
-      -Math.sqrt(Math.abs(1.0 - outPerp.lengthSquared())),
-    );
-
-    // refracted vector
-    return outPerp.add(outParallel);
-  }
-
-  /**
-   * Calculates the length of the vector
-   *
-   * @returns {Number} vector length
-   */
-  length() {
-    return Math.sqrt(this.lengthSquared());
-  }
-
-  /**
    * Calculates the length squared of the vector
    *
    * @returns {Number} length squared
@@ -156,6 +92,15 @@ class Vec3 {
       this.data[1] * this.data[1] +
       this.data[2] * this.data[2]
     );
+  }
+
+  /**
+   * Calculates the length of the vector
+   *
+   * @returns {Number} vector length
+   */
+  length() {
+    return Math.sqrt(this.lengthSquared());
   }
 
   /**
@@ -176,14 +121,10 @@ class Vec3 {
    * Subtracts two vectors and returns the resulting Vec3
    *
    * @param {Vec3} vector
-   * @returns {Vec3} out
+   * @returns {Vec3}
    */
   subtract(vector) {
-    return new Vec3(
-      this.data[0] - vector.data[0],
-      this.data[1] - vector.data[1],
-      this.data[2] - vector.data[2],
-    );
+    return this.add(vector.negate());
   }
 
   /**
@@ -207,11 +148,7 @@ class Vec3 {
    * @returns {Vec3} out
    */
   divide(vector) {
-    return new Vec3(
-      this.data[0] / vector.data[0],
-      this.data[1] / vector.data[1],
-      this.data[2] / vector.data[2],
-    );
+    return this.multiply(1 / vector);
   }
 
   /**
@@ -277,6 +214,36 @@ class Vec3 {
       this.data[2] * vector.data[0] - this.data[0] * vector.data[2],
       this.data[0] * vector.data[1] - this.data[1] * vector.data[0],
     );
+  }
+
+  /**
+   * Reflects the vector on the normal axe.
+   * @param {Vec3} normal
+   * @returns {Vec3} - the reflected vector
+   */
+  reflect(normal) {
+    return this.subtract(normal.scale(this.dot(normal) * 2));
+  }
+
+  /**
+   * Refracts a vector around a normal.
+   * @param {Vec3} normal
+   * @param {Number} ior
+   *
+   * @returns {Vec3} - refracted vector
+   */
+  refract(normal, ior) {
+    // cosine of the angle between the normal and the vector
+    const cosTheta = Math.min(this.negate().dot(normal), 1.0);
+    // perpendicular component of the refracted vector
+    const outPerp = this.add(normal.scale(cosTheta)).scale(ior);
+
+    // parallel component of the refracted vector.
+    const outParallel = normal.scale(
+      -Math.sqrt(Math.abs(1.0 - outPerp.lengthSquared())),
+    );
+    // refracted vector
+    return outPerp.add(outParallel);
   }
 
   /**

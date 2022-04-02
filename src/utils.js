@@ -74,9 +74,11 @@ function writePixel(pixelColor, samples, gamma) {
  * @returns {Vec3} - pixel color
  */
 function rayColor(ray, world, depth) {
-  const hitRec = world.hit(ray, 0.1, Infinity);
   // if we reach the ray bounce limith return black (no more light is gathered).
-  if (depth <= 0) return new Vec3();
+  if (depth <= 0) return new Vec3(0, 0, 0);
+
+  // check if the current ray hits some hittalble object in the world.
+  const hitRec = world.hit(ray, 0.1, Infinity);
   if (hitRec !== null) {
     // if we get a hit start bouncing off based on the hitRecord material scatter() function.
     // and stop bouncing when we dont hit anything or when we reach the depth limit.
@@ -88,7 +90,7 @@ function rayColor(ray, world, depth) {
         attenuation,
       );
     }
-    return new Vec3();
+    return new Vec3(0, 0, 0);
   }
 
   // Blends white and blue depending on the height of the y coordinate after scaling the ray direction to unit length
@@ -96,11 +98,11 @@ function rayColor(ray, world, depth) {
   // to the color in addition to the vertical gradient. We scale the result to the range (0.0 < t < 10).
   //
   // blendedValue=(1−t) * startValue + t * endValue
+  const color1 = new Vec3(1, 1, 1);
+  const color2 = new Vec3(0.5, 0.7, 1);
   const direction = ray.direction.normalize();
   const t = 0.5 * (direction.y + 1.0);
-  const comp1 = new Vec3(1.0, 1.0, 1.0).scale(1.0 - t);
-  const comp2 = new Vec3(0.5, 0.7, 1.0).scale(t);
-  return comp1.add(comp2);
+  return color1.scale(1.0 - t).add(color2.scale(t));
 }
 
 /**

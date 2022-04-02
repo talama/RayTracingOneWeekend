@@ -25,11 +25,9 @@ class Metal extends Material {
    */
   scatter(ray, hitRecord) {
     // reflected vector
-    let reflected = Vec3.reflect(
-      ray.direction,
-      hitRecord.normal,
-    ).normalize();
-
+    let reflected = ray.direction
+      .normalize()
+      .reflect(hitRecord.normal);
     // add blur if any
     reflected = reflected.add(
       Vec3.randomUnitSphere().scale(this.blur),

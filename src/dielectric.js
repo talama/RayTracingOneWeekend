@@ -33,7 +33,7 @@ class Dielectric extends Material {
       unitDirection.negate().dot(hitRec.normal),
       1.0,
     );
-    const sinTheta = Math.sqrt();
+    const sinTheta = Math.sqrt(1.0 - cosTheta * cosTheta);
 
     // if the ray can not be refracted its going to be reflected instead
     const cannotRefract = refractRatio * sinTheta > 1.0;
@@ -42,13 +42,9 @@ class Dielectric extends Material {
       cannotRefract ||
       this.reflectance(cosTheta, refractRatio) > Math.random()
     )
-      direction = Vec3.reflect(unitDirection, hitRec.normal);
+      direction = unitDirection.reflect(hitRec.normal);
     else
-      direction = Vec3.refract(
-        unitDirection,
-        hitRec.normal,
-        refractRatio,
-      );
+      direction = unitDirection.refract(hitRec.normal, refractRatio);
 
     return new Ray(hitRec.point, direction);
   }
