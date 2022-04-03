@@ -7,14 +7,14 @@ in javascript.
 
 Final image
 
-<img src='./imgs/final.jpg'> <br />
+<img src='./imgs/final.png'> <br />
 
 <details>
   <summary>Some of the other images rendered</summary>
-  <img src='./imgs/antialias.jpg'> <br />
-  <img src='./imgs/diffuse.jpg'> <br />
-  <img src='./imgs/blur.jpg'> <br />
-  <img src='./imgs/dieletric.jpg'> <br />
-  <img src='./imgs/hollow.jpg'> <br />
-  <img src='./imgs/camera.jpg'> <br />
-  <img src='./imgs/dof.jpg'> <br />
+  <img src='./imgs/antialias.png'> <br />
+  <img src='./imgs/diffuse.png'> <br />
+  <img src='./imgs/blur.png'> <br />
+  <img src='./imgs/dielectric.png'> <br />
+  <img src='./imgs/hollow.png'> <br />
+  <img src='./imgs/camera.png'> <br />
+  <img src='./imgs/dof.png'> <br />
