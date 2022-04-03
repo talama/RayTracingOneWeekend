@@ -1,12 +1,11 @@
-import Dielectric from './dielectric.js';
+import Vec3 from './vec3.js';
 import HittableList from './hittableList.js';
 import Lambert from './lambert.js';
 import Metal from './metal.js';
+import Dielectric from './dielectric.js';
 import Sphere from './sphere.js';
-import Vec3 from './vec3.js';
 
 const EPSILON = 0.00001;
-
 const degree = Math.PI / 180;
 
 // converts a angle in degrees to radians
@@ -78,7 +77,7 @@ function rayColor(ray, world, depth) {
   if (depth <= 0) return new Vec3(0, 0, 0);
 
   // check if the current ray hits some hittalble object in the world.
-  const hitRec = world.hit(ray, 0.1, Infinity);
+  const hitRec = world.hit(ray, 0.0001, Infinity);
   if (hitRec !== null) {
     // if we get a hit start bouncing off based on the hitRecord material scatter() function.
     // and stop bouncing when we dont hit anything or when we reach the depth limit.

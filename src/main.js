@@ -8,10 +8,10 @@ import Camera from './camera.js';
 (function () {
   // Image
   const aspectRatio = 16.0 / 9.0;
-  const imageWidth = 100;
+  const imageWidth = 1200;
   const imageHeight = Math.round(imageWidth / aspectRatio);
-  const samples = 100;
-  const maxDepth = 25;
+  const samples = 500;
+  const maxDepth = 50;
   const gamma = 2.0;
   const ppmHeader = `P3\n${imageWidth} ${imageHeight}\n255\n`;
 
@@ -38,8 +38,7 @@ import Camera from './camera.js';
 
   // Render
   const t0 = performance.now();
-  const writeStream = fs.createWriteStream('./imgs/test.ppm');
-  // console.log(ppmHeader);
+  const writeStream = fs.createWriteStream('./imgs/final.ppm');
   writeStream.write(ppmHeader);
   for (let y = imageHeight - 1; y >= 0; y -= 1) {
     console.error('Scanline remaining: ', y);
